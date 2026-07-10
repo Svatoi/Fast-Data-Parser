@@ -10,4 +10,4 @@ else()
     add_compile_options(-03 -march=native -Wall -Wextra - pthread)
 endif()
 
-add_executable(${PROJECT_NAME} src/main.cpp)
+add_executable(${PROJECT_NAME} app/src/main.cpp)
