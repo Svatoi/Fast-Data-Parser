@@ -16,7 +16,7 @@ def generate_transactions(filename, num_rows):
 
     with open(filename, mode='w', newline='') as file:
         writer = csv.writer(file)
-        writer.writerow(['transaction_id','timestamp', 'user_id', 'amount', 'currency', 'status\n'])
+        writer.writerow(['transaction_id','timestamp', 'user_id', 'amount', 'currency', 'status'])
 
         batch_size = 100000
         batch = []

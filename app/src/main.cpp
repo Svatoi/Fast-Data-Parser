@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string_view>
 #include "MemoryMappedFile.h"
+#include "CsvParser.h"
 
 int main(int argc, char* argv[]) {
     if (argc != 2) {
@@ -9,16 +10,31 @@ int main(int argc, char* argv[]) {
     }
 
     try {
-        std::string filepath = argv[1];
-        std::cout << "Mapping file into memory..." << std::endl;
+        MemoryMappedFile mmapFile(argv[1]);
+        std::string_view fileView(mmapFile.data(), mmapFile.size());
 
-        MemoryMappedFile mmapFile(filepath);
+        size_t firstNewline = fileView.find('\n');
+        if (firstNewline == std::string_view::npos) return 0;
 
-        std::cout << "File mapped successfully!" << std::endl;
-        std::cout << "File size: " << mmapFile.size() / (1024 * 1024) << " MB" << std::endl;
+        size_t secondNewline = fileView.find('\n', firstNewline + 1);
+        if (secondNewline == std::string_view::npos) return 0;
 
-        std::string_view head(mmapFile.data(), std::min<size_t>(mmapFile.size(), 100));
-        std::cout << "--- Head of file ---\n" << head << "\n--------------------\n";
+        std::string_view firstDataRow = fileView.substr(
+            firstNewline + 1,
+            secondNewline - firstNewline - 1
+        );
+
+        std::cout << "Raw row: " << firstDataRow << "\n\n";
+
+        CsvRow row(firstDataRow);
+
+        std::cout << "--- Parsed Data ---\n";
+        std::cout << "Transaction ID : " << row.getString(0) << "\n";
+        std::cout << "User ID        : " << row.getInt(2) << "\n";
+        std::cout << "Amount         : " << row.getDouble(3) << "\n";
+        std::cout << "Currency       : " << row.getString(4) << "\n";
+        std::cout << "Status         : " << row.getString(5) << "\n";
+
     } catch (const std::exception& e) {
         std::cerr << "Error: " << e.what() << std::endl;
         return 1;
