@@ -22,13 +22,13 @@ The C++ engine processes over 1 million rows in under 100 milliseconds
 ## Main Features
 
 - **Memory Mapping (WinAPI):** The dataset is mapped directly into the process's virtual address space
-- The OS manages all page caching, no data is copied into RAM
+The OS manages all page caching, no data is copied into RAM
 
 - **Zero-Copy Parsing:** Uses `std::string_view` as a lightweight window over already mapped memory 
-- Zero heap allocations (`new`/`malloc`) during the entire parsing phase
+Zero heap allocations (`new`/`malloc`) during the entire parsing phase
 
 - **Lock-Free Multithreading:** A custom Thread Pool splits the file into chunks aligned to newline boundaries 
-- Each thread aggregates results into its own local hash map, no `std::mutex` in the hot path
+Each thread aggregates results into its own local hash map, no `std::mutex` in the hot path
 
 - **Fast Number Conversion:** Uses C++17/20 `std::from_chars` for string to integer and string-to-double conversion, avoiding slow locale-aware functions like `std::stoi` or `std::stod`
 
